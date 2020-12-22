@@ -1,0 +1,17 @@
+---
+- name: Compile kernel for J3455N motherboard
+  hosts: all
+
+  handlers:
+    - include:  handlers/main.yml
+
+
+  pre_tasks:
+    - name: prepare proxmox
+      include_tasks: "tasks/fix-proxmox.yml"
+
+  tasks:
+    - name: Compile and install kernel
+      include_tasks: "tasks/compile-kernel.yml"
+
+

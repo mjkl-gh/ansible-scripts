@@ -1,0 +1,47 @@
+- hosts: all
+
+  roles:
+    - postgresql
+    - timescaledb
+
+  vars_files:
+    - vars.yml
+
+  vars_prompt:
+    - name: pg_admin_username
+      prompt: What is your postgresql admin username?
+      private: no
+
+    - name: pg_admin_password
+      prompt: What is your postgresql admin password
+
+  pre_tasks:
+    - name: Update apt cache if needed.
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+    - name: Upgrade packages
+      apt:
+        upgrade: dist
+    - name: Ensure sudo is installed
+      apt:
+        name: sudo
+        state: present
+    - name: Fix python 2 dependencies
+      set_fact:
+        pg_required_libs: 
+          python3-psycopg2
+    - name: Create admin user
+      when: pg_admin_username
+      block:
+      - name: Combine admin username with password and role_attr_flags
+        set_fact:
+          pg_admin_user:
+            name: "{{ pg_admin_username }}"
+            password: "{{ pg_admin_password }}"
+            role_attr_flags: CREATEDB,CREATEROLE,SUPERUSER,LOGIN      
+
+      - name: Merge admin user with pg_user list
+        set_fact:
+          pg_users: "{{ pg_users + [ pg_admin_user ] }}"
+

@@ -1,0 +1,16 @@
+---
+- name: Include variables
+  include_vars: ../vars/kernel-compiler.yml
+
+- name: Update apt cache if needed.
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+- name: Ensure extra requirements for compiling kernel
+  apt:
+    name: "{{ required_libs }}"
+    state: present
+- name: Ensure kernel repo is at the latest
+  git:
+    repo: git.proxmox.com/git/pve-kernel.git
+    dest: /usr/src/

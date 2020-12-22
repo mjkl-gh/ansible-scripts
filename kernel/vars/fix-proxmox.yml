@@ -1,0 +1,24 @@
+proxmox_common_utils:
+- parted
+- whois
+- omping
+- tmux
+- sshpass
+- wget
+- axel
+- nano
+- pigz
+- net-tools
+- htop
+- iptraf
+- iotop
+- iftop
+- iperf
+- unzip
+- zip
+- curl
+- dialog
+- build-essential
+- git
+- ipset
+- kexec-tools

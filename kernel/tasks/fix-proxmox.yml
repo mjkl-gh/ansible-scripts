@@ -1,0 +1,55 @@
+---
+- name: Include variables
+  include_vars: ../vars/fix-proxmox.yml
+
+- name: Disable enterprise proxmox repo
+  lineinfile:
+    path: /etc/apt/sources.list.d/pve-enterprise.list
+    regexp: '^deb https://enterprise.proxmox.com/debian/pve buster pve-enterprise'
+    line: '#deb https://enterprise.proxmox.com/debian/pve buster pve-enterprise'
+- name: enable public proxmox repo
+  lineinfile:
+    path: /etc/apt/sources.list.d/pve-public-repo.list
+    line: 'deb http://download.proxmox.com/debian buster pve-no-subscription'
+    create: yes
+- name: enable latest ceph repo
+  lineinfile:
+    path: /etc/apt/sources.list.d/pve-public-repo.list
+    line: 'deb http://download.proxmox.com/debian/ceph-luminous buster main'
+    create: yes
+- name: Update apt cache if needed.
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+- name: Upgrade packages
+  apt:
+    upgrade: dist
+
+- name: "Ensure extra requirements for proxmox"
+  apt:
+    name: "{{ proxmox_common_utils }}"
+    state: present
+- name: Ensure kexec-pve.service install
+  template:
+    src: templates/kexec-pve.service.j2
+    dest: /etc/systemd/system/kexec-pve.service
+- name: Ensure kexec-pve.service is enabled
+  systemd:
+    enabled: yes
+    state: restarted
+    daemon_reload: yes
+    name: kexec-pve
+
+- name: Replace gzip with pigz
+  file:
+    src: /usr/bin/pigz
+    dest: /usr/local/bin/gzip
+    state: link
+- name: Replace gunzip with unpigz
+  file:
+    src: /usr/bin/unpigz
+    dest: /usr/local/bin/gunzip
+    state: link
+
+- name: Remove nag banner
+  include_tasks: "remove-nag.yml"

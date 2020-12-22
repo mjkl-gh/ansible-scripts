@@ -1,0 +1,18 @@
+pg_major_release: 12
+pg_listen_addresses: "0.0.0.0"
+pg_hba_declarations:
+   - "host all all 192.168.10.0/24 md5"
+pg_required_libs:
+   - python3-psycopg2
+pg_users:
+   - name: homeassistant # required. Name of the user (role) to add or remove.
+     password: homeassistant    
+pg_databases:
+   - name: homeassistant
+     owner: homeassistant 
+pg_users_no_log: false
+
+timescaledb_autotune: true
+timescaledb_user: postgres
+timescaledb_pg_user: postgres
+timescaledb_pg_database: homeassistant
