@@ -10,7 +10,7 @@
   apt:
     name: "{{ required_libs }}"
     state: present
-- name: Ensure kernel repo is at the latest
+- name: Ensure kernel repo is at the latest commit
   git:
-    repo: git.proxmox.com/git/pve-kernel.git
+    repo: git://git.proxmox.com/git/pve-kernel.git
     dest: /usr/src/
